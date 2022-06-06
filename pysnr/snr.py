@@ -17,7 +17,7 @@ def snr_signal(signal, fs=1.0, n=6):
     if not signalCheck:
         raise TypeError("Signal must be a 1-D array")
     signal_no_dc = remove_dc_component(signal)
-    f, pxx = scipy.signal.periodogram(signal, fs, window=('kaiser', 38))
+    f, pxx = scipy.signal.periodogram(signal_no_dc, fs, window=('kaiser', 38))
     return snr_power_spectral_density(pxx, f, n)
 
 
@@ -62,7 +62,7 @@ def snr_power_spectral_density(pxx, frequencies, n=6):
     for idx in np.where(pxx == 0)[0].flatten():
         pxx[idx] = estimated_noise_density
     filtered_pxx = _remove_inconsistent_values(pxx)
-    total_noise = bandpower(pxx, f)
+    total_noise = bandpower(filtered_pxx, f)
     signal_power = bandpower(signal_power, low_up_first_harmonic)
     return mag2db(signal_power / total_noise, 10)
 

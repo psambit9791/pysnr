@@ -59,18 +59,46 @@ class TestSNR(unittest.TestCase):
         noise = np.round(0.001 * np.random.randn(N), 4)
 
         signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4)
-        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4232, rtol=0.5))
+        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4232, rtol=0.005))
 
         signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1))
-        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4282, rtol=0.5))
-
+        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4282, rtol=0.005))
 
     def test_snr_psd(self):
-        pass
+        Fi = 2500
+        Fs = 48000
+        N = 1024
 
+        np.random.seed(4)
+        noise = np.round(0.001 * np.random.randn(N), 4)
+
+        signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4) + noise
+        f, pxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.4232, rtol=0.005))
+
+        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)) + noise
+        f, pxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.4282, rtol=0.005))
 
     def test_snr_power(self):
-        pass
+        Fi = 2500
+        Fs = 48000
+        N = 1024
+
+        np.random.seed(4)
+        noise = np.round(0.001 * np.random.randn(N), 4)
+
+        signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4) + noise
+        f, sxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38), scaling="spectrum")
+        w = scipy.signal.windows.kaiser(len(signal), 38, False)
+        rbw = pysnr.utils.enbw(w, Fs)
+        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.4232, rtol=0.005))
+
+        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)) + noise
+        f, sxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38), scaling="spectrum")
+        w = scipy.signal.windows.kaiser(len(signal), 38)
+        rbw = pysnr.utils.enbw(w, Fs)
+        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.4282, rtol=0.005))
 
 
 class TestTHD(unittest.TestCase):
