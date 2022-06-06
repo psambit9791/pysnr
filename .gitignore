@@ -131,3 +131,4 @@ dmypy.json
 
 # Excluded Python Files
 test/temp.py
+noise.mat
