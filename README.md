@@ -35,7 +35,7 @@ of the power of the harmonics to the power of the fundamental frequency.
 
 A modified periodogram is computed using a Kaiser window with $\beta = 38$ and this information is then used to 
 determine the fundamental frequency and its harmonics. The formula used for computing the THD is:
-$$\frac{\sqrt{V_{H_2} + V_{H_3} + V_{H_4} + ...}}{V_{H_1}}$$
+$$\frac{\sqrt{V^2_{H_2} + V^2_{H_3} + V^2_{H_4} + ...}}{V_{H_1}}$$
 
 The THD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
 *power spectrum $(V^{2})$*. In case of power spectrum periodograms,the resolution bandwidth needs to be provided 
