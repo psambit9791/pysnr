@@ -22,8 +22,8 @@ and the SNR is computed using the power of fundamental frequency and the power o
 harmonics. The formula used in this case is:
 $$10 \log_{10}\left({\frac{\sqrt{\sum signal^2}}{\sqrt{\sum noise^2}}}\right)$$
 
-The SNR value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms,the resolution bandwidth needs to be provided 
+The SNR value can also be computed by providing the periodograms of *power spectral density* $(V^{2}/Hz)$ or 
+*power spectrum* $(V^{2})$. In case of power spectrum periodograms,the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
 
@@ -41,3 +41,9 @@ The THD value can also be computed by providing the periodograms of *power spect
 *power spectrum $(V^{2})$*. In case of power spectrum periodograms,the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
+
+
+### <u>Signal to Noise and Distortion Ratio</u> (SINAD)
+
+
+### <u>Spurious Free Dynamic Range</u> (SFDR)
