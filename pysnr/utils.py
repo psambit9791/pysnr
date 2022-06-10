@@ -29,11 +29,19 @@ def _find_range(psd, harmonic_idx):
     return left, right
 
 
+def alias_to_nyquist(f, fs):
+    tone = f % fs
+    if tone > fs/2:
+        return fs - tone
+    else:
+        return tone
+
+
 def rssq(data):
     return np.sqrt(np.sum(data ** 2))
 
 
-def mag2db(data, mag=20):
+def mag2db(data, mag=10):
     return mag * np.log10(data, where=(data != 0))
 
 

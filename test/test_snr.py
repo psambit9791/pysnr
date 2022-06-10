@@ -6,73 +6,68 @@ import numpy as np
 import unittest
 import pysnr
 import scipy.signal
+import scipy.io
 
 
 class TestSNR(unittest.TestCase):
 
+    def setUp(self):
+        self.sine = scipy.io.loadmat("test/data/sine_data.mat")
+        self.cosine = scipy.io.loadmat("test/data/cosine_data.mat")
+        self.aliased = scipy.io.loadmat("test/data/alias_data.mat")
+
+    def getSignalData(self, struct):
+        Fi = struct["Fi"].flatten()[0]
+        Fs = struct["Fs"].flatten()[0]
+        N = struct["N"].flatten()[0]
+        noise = struct["noise"].flatten()
+        x = struct["x"].flatten()
+
+        return Fi, Fs, N, noise, x
+
     def test_snr_signal_noise(self):
-        Fi = 2500
-        Fs = 48000
-        N = 1024
 
-        np.random.seed(4)
-        noise = 0.001 * np.random.randn(N)
+        Fi, Fs, N, noise, signal = self.getSignalData(self.sine)
+        self.assertTrue(np.isclose(pysnr.snr_signal_noise(signal, noise), 57.0343))
 
-        signal = np.sin(2*np.pi*(Fi/Fs) * np.arange(1, N+1))
-        self.assertTrue(np.isclose(pysnr.snr_signal_noise(signal, noise), 57.3851))
-
-        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1))
-        self.assertTrue(np.isclose(pysnr.snr_signal_noise(signal, noise), 57.3679))
+        Fi, Fs, N, noise, signal = self.getSignalData(self.cosine)
+        self.assertTrue(np.isclose(pysnr.snr_signal_noise(signal, noise), 57.0172))
 
     def test_snr_signal(self):
-        Fi = 2500
-        Fs = 48000
-        N = 1024
 
-        np.random.seed(4)
-        noise = np.round(0.001 * np.random.randn(N), 4)
+        Fi, Fs, N, noise, signal = self.getSignalData(self.sine)
+        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.7103, rtol=0.005))
 
-        signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4)
-        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4232, rtol=0.005))
-
-        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1))
-        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.4282, rtol=0.005))
+        Fi, Fs, N, noise, signal = self.getSignalData(self.cosine)
+        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs), 57.7142, rtol=0.005))
 
     def test_snr_psd(self):
-        Fi = 2500
-        Fs = 48000
-        N = 1024
 
-        np.random.seed(4)
-        noise = np.round(0.001 * np.random.randn(N), 4)
+        Fi, Fs, N, noise, signal = self.getSignalData(self.sine)
+        f, pxx = scipy.signal.periodogram(signal+noise, Fs, window=('kaiser', 38))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.7103, rtol=0.005))
 
-        signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4) + noise
-        f, pxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38))
-        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.4232, rtol=0.005))
-
-        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)) + noise
-        f, pxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38))
-        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.4282, rtol=0.005))
+        Fi, Fs, N, noise, signal = self.getSignalData(self.cosine)
+        f, pxx = scipy.signal.periodogram(signal+noise, Fs, window=('kaiser', 38))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectral_density(pxx, f), 57.7142, rtol=0.005))
 
     def test_snr_power(self):
-        Fi = 2500
-        Fs = 48000
-        N = 1024
 
-        np.random.seed(4)
-        noise = np.round(0.001 * np.random.randn(N), 4)
-
-        signal = np.round(np.sin(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)), 4) + noise
-        f, sxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38), scaling="spectrum")
+        Fi, Fs, N, noise, signal = self.getSignalData(self.sine)
+        f, sxx = scipy.signal.periodogram(signal+noise, Fs, window=('kaiser', 38), scaling="spectrum")
         w = scipy.signal.windows.kaiser(len(signal), 38, False)
         rbw = pysnr.utils.enbw(w, Fs)
-        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.4232, rtol=0.005))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.7438, rtol=0.005))
 
-        signal = np.cos(2 * np.pi * (Fi / Fs) * np.arange(1, N + 1)) + noise
-        f, sxx = scipy.signal.periodogram(signal, Fs, window=('kaiser', 38), scaling="spectrum")
+        Fi, Fs, N, noise, signal = self.getSignalData(self.cosine)
+        f, sxx = scipy.signal.periodogram(signal+noise, Fs, window=('kaiser', 38), scaling="spectrum")
         w = scipy.signal.windows.kaiser(len(signal), 38)
         rbw = pysnr.utils.enbw(w, Fs)
-        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.4282, rtol=0.005))
+        self.assertTrue(np.isclose(pysnr.snr_power_spectrum(sxx, f, rbw), 57.7449, rtol=0.005))
+
+    def test_snr_aliased(self):
+        Fi, Fs, N, noise, signal = self.getSignalData(self.aliased)
+        self.assertTrue(np.isclose(pysnr.snr_signal(signal + noise, Fs, aliased=True), 55.0423, rtol=0.005))
 
 
 if __name__ == '__main__':
