@@ -11,9 +11,9 @@ import scipy.signal
 class TestUtils(unittest.TestCase):
 
     def test_mag2db(self):
-        self.assertTrue(np.isclose(pysnr.mag2db(20), 26.0206))
-        self.assertTrue(np.isclose(pysnr.mag2db(10), 20))
-        self.assertTrue(np.isclose(pysnr.mag2db(5), 13.9794))
+        self.assertTrue(np.isclose(pysnr.mag2db(20), 13.0103))
+        self.assertTrue(np.isclose(pysnr.mag2db(10), 10))
+        self.assertTrue(np.isclose(pysnr.mag2db(5), 6.9897))
 
     def test_rssq(self):
         out = np.round(pysnr.rssq(np.array([1, 2, 3])), 4)
