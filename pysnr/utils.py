@@ -1,5 +1,7 @@
 import numpy as np
-
+import scipy.signal
+from matplotlib import mlab as mlab
+import math
 
 def _check_type_and_shape(data):
     if isinstance(data, np.ndarray):
@@ -15,9 +17,9 @@ def _check_type_and_shape(data):
         return False, None
 
 
-def _find_range(psd, harmonic_idx):
-    left = harmonic_idx - 1
-    right = harmonic_idx + 1
+def _find_range(psd, harmonic_idx, max_length):
+    left = max(0, harmonic_idx - 1)
+    right = min(harmonic_idx + 1, max_length - 1)
 
     while left > 0 and psd[left] <= psd[left + 1]:
         left -= 1
@@ -27,6 +29,20 @@ def _find_range(psd, harmonic_idx):
     left += 1
     right -= 1
     return left, right
+
+
+def periodogram(data, Fs, window, method="welch", scaling="density"):
+    f, pxx = None, None
+    nfft = 2 ** math.ceil(math.log(len(data)) / math.log(2))
+    if method == "welch":
+        f, pxx = scipy.signal.periodogram(data, Fs, window, nfft=nfft, scaling=scaling, detrend=False)
+    if method == "fft":
+        w = scipy.signal.get_window(window, nfft)
+        if scaling == "density":
+            pxx, f = mlab.psd(data, NFFT=nfft, Fs=Fs, window=w)
+        else:
+            pxx, f = mlab.psd(data, NFFT=nfft, Fs=Fs, window=w, scale_by_freq=False)
+    return f, pxx
 
 
 def alias_to_nyquist(f, fs):

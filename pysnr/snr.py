@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.signal
-from pysnr.utils import rssq, mag2db, remove_dc_component, bandpower, alias_to_nyquist
+from pysnr.utils import rssq, mag2db, remove_dc_component, bandpower, alias_to_nyquist, periodogram
 from pysnr.utils import _check_type_and_shape, _find_range
 
 
@@ -19,16 +19,11 @@ def snr_signal(signal, fs=1.0, n=6, aliased=False, return_noise_power=False):
     if not signalCheck:
         raise TypeError("Signal must be a 1-D array")
     signal_no_dc = remove_dc_component(signal)
-    f, pxx = scipy.signal.periodogram(signal_no_dc, fs, window=('kaiser', 38))
+    f, pxx = periodogram(signal_no_dc, fs, window=('kaiser', 38))
     return snr_power_spectral_density(pxx, f, n, aliased, return_noise_power)
 
 
 def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_noise_power=False):
-
-    def _remove_inconsistent_values(data):
-        threshold = np.median(data) * 10
-        updated = data[np.where(data < threshold)]
-        return updated
 
     pxx_dataCheck, pxx = _check_type_and_shape(pxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
@@ -38,6 +33,14 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
         raise AssertionError("Power Spectral Density data and Frequency List must be of same length")
 
     origPxx = np.copy(pxx)
+
+    # Remove DC component
+    pxx[0] = 2 * pxx[0]
+    right = 1
+    while right < len(pxx) and pxx[right - 1] >= pxx[right]:
+        right += 1
+    pxx[0:right+1] = 0
+
     freq_indices = []
     harmonics = []
     fh_idx = np.argmax(pxx)
@@ -49,8 +52,15 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
         h = first_harmonic * i
         if aliased:
             h = alias_to_nyquist(h, fs)
-        if not aliased and h > fs:
-            break
+        if not aliased and h > fs/2:
+            # temp_h = alias_to_nyquist(h, fs)
+            # closest_idx = np.argmin(np.abs(frequencies - temp_h))
+            # iLeftBin = max(1, closest_idx - 1)
+            # iRightBin = min(closest_idx + 2, len(pxx) - 1)
+            # idxMax = np.argmax(pxx[iLeftBin:iRightBin])
+            # closest_idx += idxMax
+            # list_of_indices_consistent.append(closest_idx)
+            continue
         closest_idx = np.argmin(np.abs(frequencies - h))
         iLeftBin = max(1, closest_idx - 1)
         iRightBin = min(closest_idx + 2, len(pxx) - 1)
@@ -62,18 +72,17 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
     signal_power = np.empty(0)
     low_up_first_harmonic = np.empty(0)
     for idx, harmonic_idx in enumerate(freq_indices):
-        low, up = _find_range(pxx, harmonic_idx)
+        low, up = _find_range(pxx, harmonic_idx, len(f))
         if idx == 0:
-            signal_power = np.copy(pxx[low:up])
-            low_up_first_harmonic = np.copy(f[low:up])
-        pxx[low:up] = 0.0
+            signal_power = np.copy(pxx[low:up+1])
+            low_up_first_harmonic = np.copy(f[low:up+1])
+        pxx[low:up+1] = 0.0
 
     estimated_noise_density = np.median(pxx[pxx > 0])
     for idx in np.where(pxx == 0)[0].flatten():
         pxx[idx] = estimated_noise_density
     pxx = np.min(np.vstack((pxx, origPxx)), 0)
-    filtered_pxx = _remove_inconsistent_values(pxx)
-    total_noise = bandpower(filtered_pxx, f)
+    total_noise = bandpower(pxx, f)
     signal_power = bandpower(signal_power, low_up_first_harmonic)
     if return_noise_power:
         return mag2db(signal_power / total_noise), mag2db(total_noise)
