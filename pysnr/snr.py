@@ -1,7 +1,6 @@
 import numpy as np
-import scipy.signal
-from pysnr.utils import rssq, mag2db, remove_dc_component, bandpower, alias_to_nyquist, periodogram
-from pysnr.utils import _check_type_and_shape, _find_range
+from pysnr.utils import rssq, mag2db, remove_dc_component, bandpower, alias_to_nyquist, periodogram, _get_tone_indices_from_psd
+from pysnr.utils import _check_type_and_shape
 
 
 def snr_signal_noise(signal, noise, return_noise_power=False):
@@ -36,16 +35,16 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
 
     # Remove DC component
     pxx[0] = 2 * pxx[0]
-    right = 1
-    while right < len(pxx) and pxx[right - 1] >= pxx[right]:
-        right += 1
-    pxx[0:right+1] = 0
+    iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, 0)
+    pxx[0:iRight+1] = 0
 
     freq_indices = []
     harmonics = []
+
     fh_idx = np.argmax(pxx)
     first_harmonic = f[fh_idx]
-    freq_indices.append(fh_idx)
+    iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, first_harmonic)
+    freq_indices.append([iLeft, iHarm, iRight])
     fs = frequencies[-1] * 2
 
     for i in range(2, n+1):
@@ -53,26 +52,15 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
         if aliased:
             h = alias_to_nyquist(h, fs)
         if not aliased and h > fs/2:
-            # temp_h = alias_to_nyquist(h, fs)
-            # closest_idx = np.argmin(np.abs(frequencies - temp_h))
-            # iLeftBin = max(1, closest_idx - 1)
-            # iRightBin = min(closest_idx + 2, len(pxx) - 1)
-            # idxMax = np.argmax(pxx[iLeftBin:iRightBin])
-            # closest_idx += idxMax
-            # list_of_indices_consistent.append(closest_idx)
             continue
-        closest_idx = np.argmin(np.abs(frequencies - h))
-        iLeftBin = max(1, closest_idx - 1)
-        iRightBin = min(closest_idx + 2, len(pxx) - 1)
-        idxMax = np.argmax(pxx[iLeftBin:iRightBin])
-        closest_idx += idxMax
-        harmonics.append(frequencies[closest_idx])
-        freq_indices.append(closest_idx)
+        iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, h)
+        harmonics.append(frequencies[iHarm])
+        freq_indices.append([iLeft, iHarm, iRight])
 
     signal_power = np.empty(0)
     low_up_first_harmonic = np.empty(0)
     for idx, harmonic_idx in enumerate(freq_indices):
-        low, up = _find_range(pxx, harmonic_idx, len(f))
+        low, harmid, up = harmonic_idx
         if idx == 0:
             signal_power = np.copy(pxx[low:up+1])
             low_up_first_harmonic = np.copy(f[low:up+1])
