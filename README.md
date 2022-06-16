@@ -3,9 +3,10 @@
 PySNR is a Python library which provides a suite of tools to users for performing various types of noise analysis on 
 a signal. PySNR aims to provide four main functionalities:
 - [x] SNR (Signal to Noise Ratio)
-- [ ] THD (Total Harmonic Distortion)
+- [x] THD (Total Harmonic Distortion)
 - [ ] SINAD (Signal to Noise and Distortion Ratio)
 - [ ] SFDR (Spurious Free Dynamic Range)
+- [ ] TOI (Third Order Intercept)
 
 The following sections elaborate on each of these utilities further.
 
@@ -38,12 +39,26 @@ determine the fundamental frequency and its harmonics. The formula used for comp
 $$\frac{\sqrt{V^2_{H_2} + V^2_{H_3} + V^2_{H_4} + ...}}{V_{H_1}}$$
 
 The THD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms,the resolution bandwidth needs to be provided 
+*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
 
 
 ### <u>Signal to Noise and Distortion Ratio</u> (SINAD)
 
+This calculates the signal-to-noise-and-distortion ratio for any signal. SINAD is defined as the ratio between the 
+power of the signal's fundamental frequency to the power of the background noise and harmonics.
+
+A modified periodogram is computed using a Kaiser window with $\beta = 38$ and this information is then used to 
+determine the fundamental frequency and its harmonics. The formula used for computing the SINAD is:
+$$\frac{P_{fundamental}}{P_{noise} + P_{harmonics}}$$
+
+The SINAD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
+*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
+as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
+the resolution bandwidth.
 
 ### <u>Spurious Free Dynamic Range</u> (SFDR)
+
+
+### <u>Third Order Intercept</u> (TOI)

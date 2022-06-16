@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal
 
+
 def _check_type_and_shape(data):
     if isinstance(data, np.ndarray):
         if len(data.shape) != 1:
