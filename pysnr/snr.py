@@ -13,16 +13,16 @@ def snr_signal_noise(signal, noise, return_noise_power=False):
     return mag2db(rssq(signal)**2 / rssq(noise)**2)
 
 
-def snr_signal(signal, fs=1.0, n=6, aliased=False, return_noise_power=False):
+def snr_signal(signal, fs=1.0, n=6, aliased=False, return_power=False):
     signalCheck, signal = _check_type_and_shape(signal)
     if not signalCheck:
         raise TypeError("Signal must be a 1-D array")
     signal_no_dc = remove_dc_component(signal)
     f, pxx = periodogram(signal_no_dc, fs, window=('kaiser', 38))
-    return snr_power_spectral_density(pxx, f, n, aliased, return_noise_power)
+    return snr_power_spectral_density(pxx, f, n, aliased, return_power)
 
 
-def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_noise_power=False):
+def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_power=False):
 
     pxx_dataCheck, pxx = _check_type_and_shape(pxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
@@ -72,12 +72,12 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_nois
     pxx = np.min(np.vstack((pxx, origPxx)), 0)
     total_noise = bandpower(pxx, f)
     signal_power = bandpower(signal_power, low_up_first_harmonic)
-    if return_noise_power:
+    if return_power:
         return mag2db(signal_power / total_noise), mag2db(total_noise)
     return mag2db(signal_power / total_noise)
 
 
-def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_noise_power=False):
+def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_power=False):
     sxx_dataCheck, sxx = _check_type_and_shape(sxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
     if not sxx_dataCheck or not frequenciesCheck:
@@ -85,4 +85,4 @@ def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_noise_p
     if len(f) != len(sxx):
         raise AssertionError("Power Spectrum data and Frequency List must be of same length")
     pxx = sxx/rbw
-    return snr_power_spectral_density(pxx, f, n, aliased, return_noise_power)
+    return snr_power_spectral_density(pxx, f, n, aliased, return_power)
