@@ -1,5 +1,8 @@
 # PySNR
 
+[![Build Status](https://app.travis-ci.com/psambit9791/pysnr.svg?branch=master)](https://app.travis-ci.com/psambit9791/pysnr)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?)](https://github.com/psambit9791/jdsp/blob/master/LICENSE)
+
 PySNR is a Python library which provides a suite of tools to users for performing various types of noise analysis on 
 a signal. PySNR aims to provide four main functionalities:
 - [x] SNR (Signal to Noise Ratio)
