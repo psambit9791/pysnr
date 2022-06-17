@@ -7,7 +7,7 @@ PySNR is a Python library which provides a suite of tools to users for performin
 a signal. PySNR aims to provide four main functionalities:
 - [x] SNR (Signal to Noise Ratio)
 - [x] THD (Total Harmonic Distortion)
-- [ ] SINAD (Signal to Noise and Distortion Ratio)
+- [x] SINAD (Signal to Noise and Distortion Ratio)
 - [ ] SFDR (Spurious Free Dynamic Range)
 - [ ] TOI (Third Order Intercept)
 
@@ -21,6 +21,7 @@ between the power of the desired signal to the power of the background noise.
 
 If the noise magnitude is provided along with the signal, the SNR is calculated using the following formula: 
 $$20 \log_{10}\left({\frac{\sqrt{\sum signal^2}}{\sqrt{\sum noise^2}}}\right)$$
+
 If the noise magnitude is not provided, a modified periodogram is computed using a Kaiser window with $\beta = 38$
 and the SNR is computed using the power of fundamental frequency and the power of the signal after removing the top 6 
 harmonics. The formula used in this case is:
@@ -39,7 +40,7 @@ of the power of the harmonics to the power of the fundamental frequency.
 
 A modified periodogram is computed using a Kaiser window with $\beta = 38$ and this information is then used to 
 determine the fundamental frequency and its harmonics. The formula used for computing the THD is:
-$$\frac{\sqrt{V^2_{H_2} + V^2_{H_3} + V^2_{H_4} + ...}}{V_{H_1}}$$
+$$\frac{\sqrt{V^2_{H_1} + V^2_{H_2} + V^2_{H_3} + ...}}{V_{H_0}}$$
 
 The THD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
 *power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 

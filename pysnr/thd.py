@@ -1,19 +1,69 @@
 import numpy as np
 import scipy.signal
-from pysnr.utils import mag2db, remove_dc_component, alias_to_nyquist, bandpower
-from pysnr.utils import _check_type_and_shape, _get_tone_indices_from_psd
+from pysnr.utils import  _remove_dc_component, _alias_to_nyquist, _check_type_and_shape, _get_tone_indices_from_psd
+from pysnr.utils import mag2db, bandpower
 
 
 def thd_signal(signal, fs=1.0, n=6, aliased=False, return_power=False):
+    """THD from input signal without any known noise.
+
+    This function computes the THD for an input signal.
+    It assumes the fundamental frequency to be the desired signal
+
+    Parameters
+    ----------
+    signal : numpy ndarray
+        The true signal
+    fs : float
+        Sampling Frequency. Defaults to 1.0.
+    n : int
+        Number of harmonics to use (including the fundamental frequency)
+    aliased : bool
+        If True, converts the harmonics that are aliased into the Nyquist frequency
+    return_power : bool
+        If True, the harmonic power magnitude is returned
+
+    Returns
+    -------
+    float
+        The computed THD
+    float (optional)
+        The harmonic power magnitude
+    """
     signalCheck, signal = _check_type_and_shape(signal)
     if not signalCheck:
         raise TypeError("Signal must be a 1-D array")
-    signal_no_dc = remove_dc_component(signal)
+    signal_no_dc = _remove_dc_component(signal)
     f, pxx = scipy.signal.periodogram(signal_no_dc, fs, window=('kaiser', 38))
     return thd_power_spectral_density(pxx, f, n, aliased, return_power)
 
 
 def thd_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_power=False):
+    """THD from input signal without any known noise.
+
+    This function computes the THD for an input signal from its density-periodogram.
+    The function assumes the fundamental frequency to be the desired signal
+
+    Parameters
+    ----------
+    pxx : numpy ndarray
+        The power spectral density of the signal
+    frequencies : numpy ndarray
+        The frequencies corresponding to the power spectral density
+    n : int
+        Number of harmonics to use (including the fundamental frequency)
+    aliased : bool
+        If True, converts the harmonics that are aliased into the Nyquist frequency
+    return_power : bool
+        If True, the harmonic power magnitude is returned
+
+    Returns
+    -------
+    float
+        The computed THD
+    float (optional)
+        The harmonic power magnitude
+    """
     pxx_dataCheck, pxx = _check_type_and_shape(pxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
     if not pxx_dataCheck or not frequenciesCheck:
@@ -38,7 +88,7 @@ def thd_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_powe
     for i in range(2, n + 1):
         h = first_harmonic * i
         if aliased:
-            h = alias_to_nyquist(h, fs)
+            h = _alias_to_nyquist(h, fs)
         if not aliased and h > fs / 2:
             continue
         iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, h)
@@ -60,6 +110,33 @@ def thd_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_powe
 
 
 def thd_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_power=False):
+    """THD from input signal without any known noise.
+
+    This function computes the THD for an input signal from its spectrum-periodogram.
+    The function assumes the fundamental frequency to be the desired signal
+
+    Parameters
+    ----------
+    sxx : numpy ndarray
+        The power spectrum of the signal
+    frequencies : numpy ndarray
+        The frequencies corresponding to the power spectral density
+    rbw : float
+        Resolution Bandwidth computed from the window and the sampling frequency
+    n : int
+        Number of harmonics to use (including the fundamental frequency)
+    aliased : bool
+        If True, converts the harmonics that are aliased into the Nyquist frequency
+    return_power : bool
+        If True, the harmonic power magnitude is returned
+
+    Returns
+    -------
+    float
+        The computed THD
+    float (optional)
+        The harmonic power magnitude
+    """
     sxx_dataCheck, sxx = _check_type_and_shape(sxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
     if not sxx_dataCheck or not frequenciesCheck:
