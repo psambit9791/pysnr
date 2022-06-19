@@ -17,9 +17,9 @@ def _check_type_and_shape(data):
 
 
 def _get_tone_indices_from_psd(pxx, frequencies, tone_freq):
-    idxTone = None
-    idxLeft = None
-    idxRight = None
+    idxTone = np.nan
+    idxLeft = 0
+    idxRight = 0
 
     if frequencies[0] <= tone_freq < frequencies[-1]:
         idxTone = np.argmin(np.abs(frequencies - tone_freq))
@@ -38,6 +38,8 @@ def _get_tone_indices_from_psd(pxx, frequencies, tone_freq):
         idxLeft = max(0, idxLeft)
         idxRight = min(idxRight, len(pxx)-1)
 
+    if np.isnan(idxTone):
+        return idxTone, 0, -1
     return idxTone, idxLeft, idxRight
 
 
@@ -169,6 +171,8 @@ def bandpower(pxx, f):
     float
         The computed value
     """
+    if len(pxx) == 0:
+        return np.nan
     sxx = []
     widths = np.diff(f)
     missing_width = (f[-1] - f[0])/(len(f) - 1)

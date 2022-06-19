@@ -3,11 +3,12 @@ from pysnr.utils import mag2db, _remove_dc_component, bandpower, periodogram, _g
 from pysnr.utils import _check_type_and_shape
 
 
-def sinad_signal(signal, fs=1.0, return_power=False):
-    """SINAD from input signal without any known noise.
+def sinad_signal(signal, fs=1.0):
+    """SINAD from input signal.
 
     This function computes the SINAD for an input signal.
-    It assumes the fundamental frequency to be the desired signal
+    It assumes the fundamental frequency to be the desired signal.
+    Uses a Kaiser window with beta set to 38 to compute the periodogram.
 
     Parameters
     ----------
@@ -15,14 +16,12 @@ def sinad_signal(signal, fs=1.0, return_power=False):
         The true signal
     fs : float
         Sampling Frequency. Defaults to 1.0.
-    return_power : bool
-        If True, the total noise and harmonic power magnitude is returned
 
     Returns
     -------
     float
         The computed SINAD
-    float (optional)
+    float
         The total noise and harmonic power magnitude
     """
     signalCheck, signal = _check_type_and_shape(signal)
@@ -30,14 +29,14 @@ def sinad_signal(signal, fs=1.0, return_power=False):
         raise TypeError("Signal must be a 1-D array")
     signal_no_dc = _remove_dc_component(signal)
     f, pxx = periodogram(signal_no_dc, fs, window=('kaiser', 38))
-    return sinad_power_spectral_density(pxx, f, return_power)
+    return sinad_power_spectral_density(pxx, f)
 
 
-def sinad_power_spectral_density(pxx, frequencies, return_power=False):
-    """SINAD from input signal without any known noise.
+def sinad_power_spectral_density(pxx, frequencies):
+    """SINAD from input signal.
 
     This function computes the SINAD for an input signal from its density-periodogram.
-    The function assumes the fundamental frequency to be the desired signal
+    The function assumes the fundamental frequency to be the desired signal.
 
     Parameters
     ----------
@@ -45,14 +44,12 @@ def sinad_power_spectral_density(pxx, frequencies, return_power=False):
         The power spectral density of the signal
     frequencies : numpy ndarray
         The frequencies corresponding to the power spectral density
-    return_power : bool
-        If True, the total noise and harmonic power magnitude is returned
 
     Returns
     -------
     float
         The computed SINAD
-    float (optional)
+    float
         The total noise and harmonic power magnitude
     """
     pxx_dataCheck, pxx = _check_type_and_shape(pxx)
@@ -67,7 +64,7 @@ def sinad_power_spectral_density(pxx, frequencies, return_power=False):
     # Remove DC component
     pxx[0] = 2 * pxx[0]
     iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, 0)
-    pxx[0:iRight+1] = 0
+    pxx[iLeft:iRight+1] = 0
 
     fh_idx = np.argmax(pxx)
     first_harmonic = f[fh_idx]
@@ -82,16 +79,14 @@ def sinad_power_spectral_density(pxx, frequencies, return_power=False):
     pxx = np.min(np.vstack((pxx, origPxx)), 0)
     total_noise = bandpower(pxx, f)
     signal_power = bandpower(signal_pxx, signal_f)
-    if return_power:
-        return mag2db(signal_power / total_noise), mag2db(total_noise)
-    return mag2db(signal_power / total_noise)
+    return mag2db(signal_power / total_noise), mag2db(total_noise)
 
 
-def sinad_power_spectrum(sxx, frequencies, rbw, return_power=False):
-    """SINAD from input signal without any known noise.
+def sinad_power_spectrum(sxx, frequencies, rbw):
+    """SINAD from input signal.
 
     This function computes the SINAD for an input signal from its spectrum-periodogram.
-    The function assumes the fundamental frequency to be the desired signal
+    The function assumes the fundamental frequency to be the desired signal.
 
     Parameters
     ----------
@@ -101,14 +96,12 @@ def sinad_power_spectrum(sxx, frequencies, rbw, return_power=False):
         The frequencies corresponding to the power spectral density
     rbw : float
         Resolution Bandwidth computed from the window and the sampling frequency
-    return_power : bool
-        If True, the total noise and harmonic power magnitude is returned
 
     Returns
     -------
     float
         The computed SINAD
-    float (optional)
+    float
         The total noise and harmonic power magnitude
     """
     sxx_dataCheck, sxx = _check_type_and_shape(sxx)
@@ -118,4 +111,4 @@ def sinad_power_spectrum(sxx, frequencies, rbw, return_power=False):
     if len(f) != len(sxx):
         raise AssertionError("Power Spectrum data and Frequency List must be of same length")
     pxx = sxx/rbw
-    return sinad_power_spectral_density(pxx, f, return_power)
+    return sinad_power_spectral_density(pxx, f)
