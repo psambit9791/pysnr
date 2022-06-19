@@ -83,3 +83,29 @@ MATLAB Equivalent Functions
      - sinad_power_spectral_density(pxx, frequencies, n)
    * - sinad(sxx,frequencies,rbw,'power')
      - sinad_power_spectrum(sxx, frequencies, n)
+
+
+.. list-table:: Third-Order Intercept Point (TOI)
+   :widths: 50 50
+   :header-rows: 1
+
+   * - MATLAB
+     - PySNR
+   * - toi(signal,Fs)
+     - toi_signal(signal, Fs)
+   * - toi(pxx,frequencies,'psd')
+     - toi_power_spectral_density(pxx, frequencies)
+   * - toi(sxx,frequencies,rbw,'power')
+     - toi_power_spectrum(sxx, frequencies)
+
+
+.. list-table:: Spurious Free Dynamic Range (TOI)
+   :widths: 50 50
+   :header-rows: 1
+
+   * - MATLAB
+     - PySNR
+   * - sfdr(signal,Fs,msd)
+     - sfdr_signal(signal, Fs,msd)
+   * - sfdr(sxx,frequencies,msd,'power')
+     - toi_power_spectrum(sxx, frequencies, msd)

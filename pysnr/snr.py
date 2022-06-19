@@ -3,7 +3,7 @@ from pysnr.utils import rssq, mag2db, _remove_dc_component, bandpower, _alias_to
 from pysnr.utils import _check_type_and_shape
 
 
-def snr_signal_noise(signal, noise, return_power=False):
+def snr_signal_noise(signal, noise):
     """SNR from input signal and known noise.
 
     This function computes the SNR for a signal and a known noise.
@@ -14,30 +14,27 @@ def snr_signal_noise(signal, noise, return_power=False):
         The true signal
     noise : numpy ndarray
         The noise
-    return_power : bool
-        If True, the noise magnitude is returned
 
     Returns
     -------
     float
         The computed SNR
-    float (optional)
+    float
         The noise magnitude
     """
     signalCheck, signal = _check_type_and_shape(signal)
     noiseCheck, noise = _check_type_and_shape(noise)
     if not signalCheck or not noiseCheck:
         raise TypeError("Signal and Noise must be 1-D arrays")
-    if return_power:
-        return mag2db(rssq(signal)**2 / rssq(noise)**2), rssq(noise)**2
-    return mag2db(rssq(signal)**2 / rssq(noise)**2)
+    return mag2db(rssq(signal)**2 / rssq(noise)**2), rssq(noise)**2
 
 
-def snr_signal(signal, fs=1.0, n=6, aliased=False, return_power=False):
-    """SNR from input signal without any known noise.
+def snr_signal(signal, fs=1.0, n=6, aliased=False):
+    """SNR from input signal.
 
     This function computes the SNR for a signal where the noise is not known.
-    It assumes the fundamental frequency to be the desired signal
+    It assumes the fundamental frequency to be the desired signal.
+    Uses a Kaiser window with beta set to 38 to compute the periodogram.
 
     Parameters
     ----------
@@ -49,14 +46,12 @@ def snr_signal(signal, fs=1.0, n=6, aliased=False, return_power=False):
         Number of harmonics to use (including the fundamental frequency)
     aliased : bool
         If True, converts the harmonics that are aliased into the Nyquist frequency
-    return_power : bool
-        If True, the noise magnitude is returned
 
     Returns
     -------
     float
         The computed SNR
-    float (optional)
+    float
         The noise power magnitude
     """
     signalCheck, signal = _check_type_and_shape(signal)
@@ -64,14 +59,14 @@ def snr_signal(signal, fs=1.0, n=6, aliased=False, return_power=False):
         raise TypeError("Signal must be a 1-D array")
     signal_no_dc = _remove_dc_component(signal)
     f, pxx = periodogram(signal_no_dc, fs, window=('kaiser', 38))
-    return snr_power_spectral_density(pxx, f, n, aliased, return_power)
+    return snr_power_spectral_density(pxx, f, n, aliased)
 
 
-def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_power=False):
-    """SNR from input signal without any known noise.
+def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False):
+    """SNR from input signal.
 
     This function computes the SNR for a signal where the noise is not known from its density-periodogram.
-    The function assumes the fundamental frequency to be the desired signal
+    The function assumes the fundamental frequency to be the desired signal.
 
     Parameters
     ----------
@@ -83,14 +78,12 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_powe
         Number of harmonics to use (including the fundamental frequency)
     aliased : bool
         If True, converts the harmonics that are aliased into the Nyquist frequency
-    return_power : bool
-        If True, the noise magnitude is returned
 
     Returns
     -------
     float
         The computed SNR
-    float (optional)
+    float
         The noise power magnitude
     """
 
@@ -106,7 +99,7 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_powe
     # Remove DC component
     pxx[0] = 2 * pxx[0]
     iHarm, iLeft, iRight = _get_tone_indices_from_psd(pxx, frequencies, 0)
-    pxx[0:iRight+1] = 0
+    pxx[iLeft:iRight+1] = 0
 
     freq_indices = []
     harmonics = []
@@ -142,16 +135,14 @@ def snr_power_spectral_density(pxx, frequencies, n=6, aliased=False, return_powe
     pxx = np.min(np.vstack((pxx, origPxx)), 0)
     total_noise = bandpower(pxx, f)
     signal_power = bandpower(signal_power, low_up_first_harmonic)
-    if return_power:
-        return mag2db(signal_power / total_noise), mag2db(total_noise)
-    return mag2db(signal_power / total_noise)
+    return mag2db(signal_power / total_noise), mag2db(total_noise)
 
 
-def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_power=False):
-    """SNR from input signal without any known noise.
+def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False):
+    """SNR from input signal.
 
     This function computes the SNR for a signal where the noise is not known from its spectrum-periodogram.
-    The function assumes the fundamental frequency to be the desired signal
+    The function assumes the fundamental frequency to be the desired signal.
 
     Parameters
     ----------
@@ -165,14 +156,12 @@ def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_power=F
         Number of harmonics to use (including the fundamental frequency)
     aliased : bool
         If True, converts the harmonics that are aliased into the Nyquist frequency
-    return_power : bool
-        If True, the noise magnitude is returned
 
     Returns
     -------
     float
         The computed SNR
-    float (optional)
+    float
         The noise power magnitude
     """
     sxx_dataCheck, sxx = _check_type_and_shape(sxx)
@@ -182,4 +171,4 @@ def snr_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False, return_power=F
     if len(f) != len(sxx):
         raise AssertionError("Power Spectrum data and Frequency List must be of same length")
     pxx = sxx/rbw
-    return snr_power_spectral_density(pxx, f, n, aliased, return_power)
+    return snr_power_spectral_density(pxx, f, n, aliased)
