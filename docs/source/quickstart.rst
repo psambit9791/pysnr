@@ -99,7 +99,7 @@ MATLAB Equivalent Functions
      - toi_power_spectrum(sxx, frequencies)
 
 
-.. list-table:: Spurious Free Dynamic Range (TOI)
+.. list-table:: Spurious Free Dynamic Range (SFDR)
    :widths: 50 50
    :header-rows: 1
 
@@ -107,5 +107,7 @@ MATLAB Equivalent Functions
      - PySNR
    * - sfdr(signal,Fs,msd)
      - sfdr_signal(signal, Fs,msd)
+   * - *<Not Implemented>*
+     - sfdr_power_spectral_density(signal, Fs,msd)
    * - sfdr(sxx,frequencies,msd,'power')
-     - toi_power_spectrum(sxx, frequencies, msd)
+     - sfdr_power_spectrum(sxx, frequencies, msd)

@@ -43,8 +43,8 @@ A modified periodogram is computed using a Kaiser window with $\beta = 38$ and t
 determine the fundamental frequency and its harmonics. The formula used for computing the THD is:
 $$\frac{\sqrt{V^2_{H_1} + V^2_{H_2} + V^2_{H_3} + ...}}{V_{H_0}}$$
 
-The THD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
+The THD value can also be computed by providing the periodograms of *power spectral density* $(V^{2}/Hz)$ or 
+*power spectrum* $(V^{2})$. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
 
@@ -58,8 +58,8 @@ A modified periodogram is computed using a Kaiser window with $\beta = 38$ and t
 determine the fundamental frequency and its harmonics. The formula used for computing the SINAD is:
 $$\frac{P_{fundamental}}{P_{noise} + P_{harmonics}}$$
 
-The SINAD value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
+The SINAD value can also be computed by providing the periodograms of *power spectral density* $(V^{2}/Hz)$ or 
+*power spectrum* $(V^{2})$. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
 
@@ -78,8 +78,8 @@ the two dominant frequencies $F_1$ and $F_2$ which is considered the fundamental
 the TOI is:
 $$\overline{P_{fundamental}} + \frac{\overline{P_{fundamental}} - \overline{P_{intermodulation}}}{2}$$
 
-The TOI value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
+The TOI value can also be computed by providing the periodograms of *power spectral density* $(V^{2}/Hz)$ or 
+*power spectrum* $(V^{2})$. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
 
@@ -92,7 +92,7 @@ A modified periodogram is computed using a Kaiser window with $\beta = 38$ and t
 determine the fundamental frequency and its harmonics. The formula used for computing the SFDR is:
 $$10 \log_{10}\left({\frac{P_{fundamental}}{P_spurious}}\right)$$
 
-The SFDR value can also be computed by providing the periodograms of *power spectral density $(V^{2}/Hz)$* or 
-*power spectrum $(V^{2})$*. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
+The SFDR value can also be computed by providing the periodograms of *power spectral density* $(V^{2}/Hz)$ or 
+*power spectrum* $(V^{2})$. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
