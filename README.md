@@ -10,7 +10,7 @@ PySNR aims to provide five main functionalities:
 - [x] THD (Total Harmonic Distortion)
 - [x] SINAD (Signal to Noise and Distortion Ratio)
 - [x] TOI (Third Order Intercept)
-- [ ] SFDR (Spurious Free Dynamic Range)
+- [x] SFDR (Spurious Free Dynamic Range)
 
 The following sections elaborate on each of these utilities further.
 

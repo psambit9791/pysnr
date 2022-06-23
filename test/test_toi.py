@@ -1,12 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.join("../pysnr"))
-
 import numpy as np
 import unittest
-import pysnr
 import scipy.signal
 import scipy.io
+
+sys.path.append(os.path.join("../pysnr"))
+import pysnr
 
 
 class TestTOI(unittest.TestCase):
@@ -67,7 +67,6 @@ class TestTOI(unittest.TestCase):
         self.assertTrue(np.isclose(output[0], 1.3951, rtol=0.025, equal_nan=True))
         self.assertTrue(np.isclose(output[1], np.array([-22.9131, -22.9131]), rtol=0.025, equal_nan=True).any())
         self.assertTrue(np.isclose(output[2], np.array([-71.5297, -71.5297]), rtol=0.025, equal_nan=True).any())
-
 
     def test_toi_power(self):
 

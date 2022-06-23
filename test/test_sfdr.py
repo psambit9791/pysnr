@@ -1,12 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.join("../pysnr"))
-
 import numpy as np
 import unittest
-import pysnr
 import scipy.signal
 import scipy.io
+
+sys.path.append(os.path.join("../pysnr"))
+import pysnr
 
 
 class TestSFDR(unittest.TestCase):
