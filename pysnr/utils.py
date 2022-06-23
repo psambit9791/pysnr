@@ -43,6 +43,36 @@ def _get_tone_indices_from_psd(pxx, frequencies, tone_freq):
     return idxTone, idxLeft, idxRight
 
 
+def _get_peak_border(sxx, f, fund_freq, fund_bin, msd):
+    leftBin = np.nan
+    rightBin = np.nan
+    try:
+        leftBin = np.argwhere(sxx[1:fund_bin+1] < sxx[0:fund_bin]).flatten()[-1]
+    except IndexError:
+        leftBin = 0
+    try:
+        rightBin = fund_bin + np.argwhere(sxx[fund_bin+1:len(sxx)] > sxx[fund_bin:len(sxx)-1]).flatten()[0] - 1
+    except IndexError:
+        rightBin = len(sxx) - 1
+
+    leftBinG = np.nan
+    rightBinG = np.nan
+    try:
+        leftBinG = np.argwhere(f <= (fund_freq - msd)).flatten()[-1]
+    except IndexError:
+        leftBinG = np.nan
+    try:
+        rightBinG = np.argwhere((fund_freq + msd) < f).flatten()[0]
+    except IndexError:
+        rightBinG = np.nan
+
+    if (not np.isnan(leftBinG)) and (leftBinG < leftBin):
+        leftBin = leftBinG
+    if (not np.isnan(rightBinG)) and (rightBinG > rightBin):
+        rightBin = rightBinG
+    return leftBin, rightBin
+
+
 def _alias_to_nyquist(f, fs):
     tone = f % fs
     if tone > fs/2:

@@ -9,7 +9,7 @@ import scipy.signal
 import scipy.io
 
 
-class TestSINAD(unittest.TestCase):
+class TestTOI(unittest.TestCase):
 
     def setUp(self):
         self.sine = scipy.io.loadmat("test/data/sine_data.mat")
