@@ -122,8 +122,6 @@ def thd_power_spectrum(sxx, frequencies, rbw, n=6, aliased=False):
         Number of harmonics to use (including the fundamental frequency)
     aliased : bool
         If True, converts the harmonics that are aliased into the Nyquist frequency
-    return_power : bool
-        If True, the harmonic power magnitude is returned
 
     Returns
     -------

@@ -103,7 +103,7 @@ A modified periodogram is computed using a Kaiser window with :math:`\beta = 38`
 determine the fundamental frequency and its harmonics. The formula used for computing the SFDR is:
 
 .. math::
-    10 \log_{10}\left({\frac{P_{fundamental}}{P_spurious}}\right)
+    10 \log_{10}\left({\frac{P_{fundamental}}{P_{spurious}}\right)
 
 The SFDR value can also be computed by providing the periodograms of *power spectral density* :math:`(V^{2}/Hz)` or
 *power spectrum* :math:`(V^{2})`. In case of power spectrum periodograms, the resolution bandwidth needs to be provided

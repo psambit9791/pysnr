@@ -23,7 +23,7 @@ def sfdr_signal(signal, fs=1.0, msd=0):
     float
         The computed SFDR
     float
-        The total noise and harmonic power magnitude
+        The spurious power magnitude
     """
     signalCheck, signal = _check_type_and_shape(signal)
     if not signalCheck:
@@ -53,7 +53,7 @@ def sfdr_power_spectral_density(pxx, frequencies, msd=0):
     float
         The computed SFDR
     float
-        The total noise and harmonic power magnitude
+        The spurious power magnitude
     """
     pxx_dataCheck, pxx = _check_type_and_shape(pxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
@@ -104,8 +104,6 @@ def sfdr_power_spectrum(sxx, frequencies, msd=0):
         The power spectrum of the signal
     frequencies : numpy ndarray
         The frequencies corresponding to the power spectral density
-    rbw : float
-        Resolution Bandwidth computed from the window and the sampling frequency
     msd : int
         Minimum number of discrete Fourier bins to ignore for the SFDR computation
 
@@ -114,7 +112,7 @@ def sfdr_power_spectrum(sxx, frequencies, msd=0):
     float
         The computed SFDR
     float
-        The total noise and harmonic power magnitude
+        The spurious power magnitude
     """
     sxx_dataCheck, sxx = _check_type_and_shape(sxx)
     frequenciesCheck, f = _check_type_and_shape(frequencies)
