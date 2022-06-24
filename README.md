@@ -1,7 +1,10 @@
 # PySNR
 
 [![Build Status](https://app.travis-ci.com/psambit9791/pysnr.svg?branch=master)](https://app.travis-ci.com/psambit9791/pysnr)
+![PyPI](https://img.shields.io/pypi/v/pysnr)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pysnr)
 [![Documentation Status](https://readthedocs.org/projects/pysnr/badge/?version=latest)](https://pysnr.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/497987508.svg)](https://zenodo.org/badge/latestdoi/497987508)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?)](https://github.com/psambit9791/jdsp/blob/master/LICENSE)
 
 PySNR is a Python library which provides a suite of tools for performing various types of noise analysis on  signals. 
@@ -13,7 +16,6 @@ PySNR aims to provide five main functionalities:
 - [x] SFDR (Spurious Free Dynamic Range)
 
 The following sections elaborate on each of these utilities further.
-
 
 ### <u>Signal to Noise Ratio</u> (SNR)
 
@@ -96,3 +98,38 @@ The SFDR value can also be computed by providing the periodograms of *power spec
 *power spectrum* $(V^{2})$. In case of power spectrum periodograms, the resolution bandwidth needs to be provided 
 as well. Utilities provide the ```enbw()``` function which computes the estimated noise bandwidth for assessing 
 the resolution bandwidth.
+
+
+## Installation and Usage
+
+Currently PySNR can be installed from pypi. TO install, use the following command:
+
+```
+pip install pysnr
+```
+
+To have a more detailed understanding of using the library, please refer to the 
+[**usage**](https://pysnr.readthedocs.io/en/stable/usage.html) and [**API Reference**](https://pysnr.readthedocs.io/en/stable/pysnr.html).
+
+
+## Citation
+
+If you are using this software in your research, please use the following citation:
+
+```
+@software{sambit_paul_2022_6725547,
+  author       = {Sambit Paul},
+  title        = {psambit9791/pysnr: First Release},
+  month        = jun,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {0.0.1},
+  doi          = {10.5281/zenodo.6725547},
+  url          = {https://doi.org/10.5281/zenodo.6725547}
+}
+```
+
+## License
+  
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. <br/> 
+You are free to use, modify and distribute this software, as long as the copyright header is left intact.
