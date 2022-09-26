@@ -4,6 +4,7 @@
 ![PyPI](https://img.shields.io/pypi/v/pysnr)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pysnr)
 [![Documentation Status](https://readthedocs.org/projects/pysnr/badge/?version=latest)](https://pysnr.readthedocs.io/en/latest/?badge=latest)
+[![Downloads](https://pepy.tech/badge/pysnr)](https://pepy.tech/project/pysnr)
 [![DOI](https://zenodo.org/badge/497987508.svg)](https://zenodo.org/badge/latestdoi/497987508)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?)](https://github.com/psambit9791/jdsp/blob/master/LICENSE)
 
