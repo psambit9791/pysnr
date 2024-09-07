@@ -1,6 +1,6 @@
 # PySNR
 
-[![Build Status](https://app.travis-ci.com/psambit9791/pysnr.svg?branch=master)](https://app.travis-ci.com/psambit9791/pysnr)
+[![Build Status](https://github.com/psambit9791/pysnr/actions/workflows/pytest.yml/badge.svg)](https://github.com/psambit9791/pysnr/actions/workflows/pytest.yml)
 ![PyPI](https://img.shields.io/pypi/v/pysnr)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pysnr)
 [![Documentation Status](https://readthedocs.org/projects/pysnr/badge/?version=latest)](https://pysnr.readthedocs.io/en/latest/?badge=latest)
